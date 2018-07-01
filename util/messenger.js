@@ -6,6 +6,22 @@ const sendMessage = (id, text, args) => {
     recipient: { id },
     message: { text: `EKO: ${text}` }
   }
+  
+  const response = {
+    method: 'POST',
+    body: JSON.stringify(message),
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }
+  
+  fetch(url, response).then(res => res.json()).then( data => {
+    console.log(data)
+    return true
+  }).catch(err => {
+    console.error(err)
+    return false
+  })
 }
 
 
