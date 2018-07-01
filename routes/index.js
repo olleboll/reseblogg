@@ -5,7 +5,8 @@ const router = express.Router();
 const uuid = require('uuid/v4')
 const moment = require('moment')
 
-
+const { sendMessage } = require('../util/messenger')
+console.log(sendMessage)
 const db = require('../db')
 
 
