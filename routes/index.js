@@ -24,13 +24,7 @@ router.get('/bot', (req, res, next) => {
   const token = query['hub.verify_token']
   if (token === process.env.VERIFY_TOKEN) {
     var challenge = query['hub.challenge']
-
-    response = {
-      'body': parseInt(challenge),
-      'statusCode': 200
-    };
-
-    res.status(200).json(response)
+    res.status(200).send(challenge)
   } else {
     response = {
       'body': 'Error, wrong validation token',
