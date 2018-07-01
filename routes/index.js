@@ -40,8 +40,8 @@ router.post('/bot', (req, res, next) => {
   console.log(req.body)
   const message = req.body.entry[0].messaging[0]
   console.log(message)
-  sendMessage(message.sender.id, message.message.text)
   res.status(200).send("OK")
+  sendMessage(message.sender.id, message.message.text)
 })
 
 const getPosts = async () => {

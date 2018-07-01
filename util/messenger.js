@@ -1,4 +1,6 @@
 
+const fetch = require('node-fetch')
+
 const sendMessage = (id, text, args) => {
   const url = `https://graph.facebook.com/v2.6/me/messages?access_token=${process.env.PAGE_TOKEN}`
   const message = {
