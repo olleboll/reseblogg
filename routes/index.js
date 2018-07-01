@@ -18,21 +18,27 @@ router.get('/posts', async (req, res, next) => {
   })
 })
 
-router.post('/posts', async (req, res, next) => {
+router.get('/bot', (req, res, next) => {
+  let response = {}
+  const { query } = req ;
+  const token = query['hub.verify_token']
+  if (token === process.env.VERIFY_TOKEN) {
+    var challenge = query['hub.challenge']
 
-  console.log("posting a post")
-  console.log(req.body)
-  const { post, err } = await createPost(req.body)
-  if (err) {
-    return res.json({
-      status: "not ok",
-      err
-    })
+    response = {
+      'body': parseInt(challenge),
+      'statusCode': 200
+    };
+
+    res.status(200).json(response)
+  } else {
+    response = {
+      'body': 'Error, wrong validation token',
+      'statusCode': 422
+    };
+
+    res.status(200).json(response)
   }
-  return res.json({
-    status: "ok",
-    post
-  })
 })
 
 const getPosts = async () => {
