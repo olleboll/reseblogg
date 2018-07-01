@@ -37,6 +37,9 @@ router.get('/bot', (req, res, next) => {
 
 router.post('/bot', (req, res, next) => {
   console.log(req.body)
+  const message = req.body.entry[0].messaging[0]
+  console.log(message)
+  //sendMessage(req.body.)
   res.status(200).send("OK")
 })
 
