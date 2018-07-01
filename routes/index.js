@@ -35,6 +35,11 @@ router.get('/bot', (req, res, next) => {
   }
 })
 
+router.post('/bot', (req, res, next) => {
+  console.log(req.body)
+  res.status(200).send("OK")
+})
+
 const getPosts = async () => {
 
   const params = {
