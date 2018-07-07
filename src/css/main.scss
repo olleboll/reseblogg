@@ -1,0 +1,16 @@
+.blogg-post {
+  margin: 0 auto;
+  font-weight: lighter;
+  @media screen and (max-width: 800px) {
+    padding: 25px;
+    
+  }
+  
+}
+
+.top-image {
+  width: 200px;
+  height: 200px;
+  background-color: #00f;
+  margin: 0 auto;
+}

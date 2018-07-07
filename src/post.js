@@ -2,11 +2,14 @@ import React, { Component } from 'react';
 
 class Post extends Component {
   render() {
-    
     return (
       <div className="blogg-post">
-        <h1>{this.props.title}</h1>
-        <p>{this.props.body}</p>
+        <div className="post-title row">
+          <h1>{this.props.title}</h1>
+        </div>
+        <div className="post-body row">
+          <p>{this.props.body}</p>
+        </div>
       </div>
     );
   }

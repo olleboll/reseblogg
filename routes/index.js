@@ -6,7 +6,7 @@ const uuid = require('uuid/v4')
 const moment = require('moment')
 
 const { sendMessage } = require('../util/messenger')
-console.log(sendMessage)
+
 const db = require('../db')
 
 
@@ -37,9 +37,7 @@ router.get('/bot', (req, res, next) => {
 })
 
 router.post('/bot', (req, res, next) => {
-  console.log(req.body)
   const message = req.body.entry[0].messaging[0]
-  console.log(message)
   res.status(200).send("OK")
   sendMessage(message.sender.id, message.message.text)
 })

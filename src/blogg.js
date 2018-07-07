@@ -22,16 +22,24 @@ class Blogg extends Component {
       console.log(post)
       console.log(i)
       return (
-        <div key={i} className="row">
+        <div key={i}>
           <Post title={post.title} body={post.body}/>
         </div>
       )
     })
     return (
       <div className="container">
-        <div className="top-image">
+        <div className="row">
+          <div className="col-12">
+            <div className="top-image">
+            </div>
+          </div>
         </div>
-        {posts}
+        <div className="row">
+          <div className="col-12">
+            {posts}
+          </div>
+        </div>
       </div>
     );
   }
