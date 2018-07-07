@@ -1,7 +1,7 @@
 
 const fetch = require('node-fetch')
 
-const sendMessage = (id, post, args) => {
+const sendMessage = async (id, post, args) => {
   const text = (args.error)
   ? `Error creating post. ${post.title}`
   : `Created post. Title: ${post.title}, Body: ${post.body}`
@@ -20,7 +20,7 @@ const sendMessage = (id, post, args) => {
     }
   }
   
-  fetch(url, response).then(res => res.json()).then( data => {
+  return fetch(url, response).then(res => res.json()).then( data => {
     console.log(data)
     return true
   }).catch(err => {
