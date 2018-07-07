@@ -36,10 +36,18 @@ router.get('/bot', (req, res, next) => {
   }
 })
 
-router.post('/bot', (req, res, next) => {
+router.post('/bot', async (req, res, next) => {
+  console.log("meddelande från bot")
+  console.log(req.body.entry[0])
   const message = req.body.entry[0].messaging[0]
   res.status(200).send("OK")
-  sendMessage(message.sender.id, message.message.text)
+  const command = message.message.text.split(':')
+  const { post, err } = await createPost({title: command[0], body: command[1]})
+  if (err) {
+    sendMessage(message.sender.id, {title: 'Fel', body: err})
+  } else {
+    sendMessage(message.sender.id, post)
+  }
 })
 
 const getPosts = async () => {

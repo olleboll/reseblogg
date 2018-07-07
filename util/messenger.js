@@ -1,12 +1,15 @@
 
 const fetch = require('node-fetch')
 
-const sendMessage = (id, text, args) => {
+const sendMessage = (id, post, args) => {
+  const text = (args.error)
+  ? `Error creating post. ${post.title}`
+  : `Created post. Title: ${post.title}, Body: ${post.body}`
   const url = `https://graph.facebook.com/v2.6/me/messages?access_token=${process.env.PAGE_TOKEN}`
   const message = {
     messaging_type: "RESPONSE",
     recipient: { id },
-    message: { text: `EKO: ${text}` }
+    message: { text }
   }
   
   const response = {
