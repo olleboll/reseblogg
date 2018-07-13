@@ -41,13 +41,18 @@ router.post('/bot', async (req, res, next) => {
   const message = req.body.entry[0].messaging[0]
   console.log(message)
   res.status(200).send("OK")
-  const command = message.message.text.split(':')
-  const { post, err } = await createPost({title: command[0], body: command[1]})
-  if (err) {
-    await sendMessage(message.sender.id, {title: 'Fel', body: err})
-  } else {
-    await sendMessage(message.sender.id, post)
+  if (message.text) {
+    const command = message.message.text.split(':')
+    const { post, err } = await createPost({title: command[0], body: command[1]})
+    if (err) {
+      await sendMessage(message.sender.id, {title: 'Fel', body: err})
+    } else {
+      await sendMessage(message.sender.id, post)
+    }
+  } else if (message.attachments) {
+    console.log(message.attachments)
   }
+  
 })
 
 const getPosts = async () => {
