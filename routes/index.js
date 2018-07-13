@@ -43,7 +43,6 @@ router.post('/bot', async (req, res, next) => {
   const { message } = fullMessage
   const { id } = fullMessage.sender
   console.log(message)
-  res.status(200).send("OK")
   if (message.text) {
     const command = message.text.split(':')
     const { post, err } = await createPost({title: command[0], body: command[1]})
