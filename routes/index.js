@@ -38,9 +38,10 @@ router.get('/bot', (req, res, next) => {
 
 router.post('/bot', async (req, res, next) => {
   console.log("meddelande från bot")
+  res.status(200).send("OK")
   const fullMessage = req.body.entry[0].messaging[0]
   const { message } = fullMessage
-  const { id } = fillMessage.sender
+  const { id } = fullMessage.sender
   console.log(message)
   res.status(200).send("OK")
   if (message.text) {
