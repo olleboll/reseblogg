@@ -54,6 +54,7 @@ router.post('/bot', async (req, res, next) => {
     }
   } else if (message.attachments) {
     console.log(message.attachments)
+    console.log(message.attachments[0].payload)
   }
   
 })
