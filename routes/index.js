@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const uuid = require('uuid/v4')
 const moment = require('moment')
+const fetch = require('node-fetch')
 
 const { sendMessage } = require('../util/messenger')
 
