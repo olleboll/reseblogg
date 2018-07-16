@@ -96,7 +96,8 @@ const fetchName = async (id) => {
 const getPosts = async () => {
 
   const params = {
-    TableName: process.env.POST_TABLE
+    TableName: process.env.POST_TABLE,
+    ScanIndexForward: false
   }
   return db.scan(params).promise().then( (items) => {
     const posts = items.Items
