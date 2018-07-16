@@ -48,7 +48,7 @@ router.post('/bot', async (req, res, next) => {
     const command = message.text.split(':')
     if (command.length <= 1) {
       await sendMessage(id, {title: 'Fel', body: 'Inget kommando'})
-      return 
+      return
     }
     const from = await fetchName(id)
     const { post, err } = await createPost({from, title: command[0], body: command[1]})
@@ -107,8 +107,9 @@ const addImage = async (url) => {
     }).catch(err => {
       console.error(err)
       return { post: null, err}
-  }).catch(err => {
-    return { posts: null, err}
+    }).catch(err => {
+      return { posts: null, err}
+    })
   })
 }
 
