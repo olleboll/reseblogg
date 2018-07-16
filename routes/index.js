@@ -6,7 +6,7 @@ const uuid = require('uuid/v4')
 const moment = require('moment')
 const fetch = require('node-fetch')
 
-const { sendMessage } = require('../util/messenger')
+const { sendMessage, sendError } = require('../util/messenger')
 
 const db = require('../db')
 
@@ -45,22 +45,37 @@ router.post('/bot', async (req, res, next) => {
   const fullMessage = req.body.entry[0].messaging[0]
   const { message } = fullMessage
   const { id } = fullMessage.sender
-  if (message.text) {
-    const command = message.text.split(':')
-    if (command.length <= 1) {
-      await sendMessage(id, {title: 'Fel', body: 'Inget kommando'})
-      return
+  console.log(message)
+  try {
+    if (message.text) {
+      console.log("message had text")
+      const command = message.text.split(':')
+      if (command.length <= 1) {
+        await sendMessage(id, {title: 'Fel', body: 'Inget kommando'})
+        return
+      }
+      const from = await fetchName(id)
+      console.log(command)
+      console.log(from)
+      const { post, err } = await createPost({from: from.first_name, title: command[0], body: command[1]})
+      if (err) {
+        console.log("there was an error")
+        console.error(err)
+        await sendMessage(id, {title: 'Fel', body: err})
+      } else {
+        console.log("created new post.")
+        console.log(post)
+        await sendMessage(id, post)
+      }
+    } else if (message.attachements) {
+      console.log("adding image to last post")
+      const { url } = message.attachements[0].payload
+      console.log(url)
+      await addImage(url)
     }
-    const from = await fetchName(id)
-    const { post, err } = await createPost({from, title: command[0], body: command[1]})
-    if (err) {
-      await sendMessage(id, {title: 'Fel', body: err})
-    } else {
-      await sendMessage(id, post)
-    }
-  } else if (message.attachments) {
-    const { url } = message.attachments[0].payload
-    await addImage(url)
+  } catch (err) {
+    console.error(err)
+    sendError(id, err)
   }
   
 })
@@ -72,6 +87,9 @@ const fetchName = async (id) => {
   }).then( name => {
     console.log(name)
     return name
+  }).catch(err => {
+    console.error(err)
+    return {err}
   })
 }
 
@@ -84,6 +102,7 @@ const getPosts = async () => {
     const posts = items.Items
     return { posts, err: null }
   }).catch(err => {
+    console.error(err)
     return { posts: null, err}
   })
 
@@ -96,38 +115,33 @@ const addImage = async (url) => {
   }
   return db.scan(params).promise().then( (items) => {
     const lastPost = items.Items[0]
-    if (!lastPost.images) { lastPost.images = [] }
     lastPost.images.push(url)
     const item = {
       TableName: process.env.POST_TABLE,
       Item: lastPost
     }
-    return db.put(lastPost).promise().then( (data) => {
+    console.log("lastPost")
+    return db.put(item).promise().then( (data) => {
       console.log(data)
       return { post: data, err:null}
     }).catch(err => {
       console.error(err)
       return { post: null, err}
     }).catch(err => {
+      console.error(err)
       return { posts: null, err}
     })
   })
 }
 
 const createPost = async (post) => {
+  const newPost = { ...post, images: [], timestamp: new Date().getTime(), id: uuid() }
   const item = {
     TableName: process.env.POST_TABLE,
-    Item: {
-      id: uuid(),
-      timestamp: new Date().getTime(),
-      title: post.title,
-      body: post.body,
-      location: post.location,
-    }
+    Item: newPost
   }
   return db.put(item).promise().then( (data) => {
-    console.log(data)
-    return { post: data, err:null}
+    return { post: newPost, err: null}
   }).catch(err => {
     console.error(err)
     return { post: null, err}
