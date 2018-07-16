@@ -68,9 +68,9 @@ router.post('/bot', async (req, res, next) => {
         memory.id = post.id
         await sendMessage(id, post)
       }
-    } else if (message.attachements) {
+    } else if (message.attachments) {
       console.log("adding image to last post")
-      const { url } = message.attachements[0].payload
+      const { url } = message.attachments[0].payload
       console.log(url)
       await addImage(url)
     }
