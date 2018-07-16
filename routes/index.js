@@ -65,6 +65,7 @@ router.post('/bot', async (req, res, next) => {
       } else {
         console.log("created new post.")
         console.log(post)
+        memory.id = post.id
         await sendMessage(id, post)
       }
     } else if (message.attachements) {
@@ -100,7 +101,10 @@ const getPosts = async () => {
     ScanIndexForward: false
   }
   return db.scan(params).promise().then( (items) => {
-    const posts = items.Items
+    console.log(items)
+    const posts = items.Items.sort((a,b) => {
+      return b.timestamp - a.timestamp
+    })
     return { posts, err: null }
   }).catch(err => {
     console.error(err)
@@ -110,18 +114,28 @@ const getPosts = async () => {
 }
 
 const addImage = async (url) => {
+  const id = memory.id
+  if (!id) {return {err: 'no post in memory'}}
   const params = {
     TableName: process.env.POST_TABLE,
-    limit: 1
+    KeyConditionExpression: 'id = :id',
+    ExpressionAttributeValues: {
+      ':id': id,
+    }
   }
-  return db.scan(params).promise().then( (items) => {
-    const lastPost = items.Items[0]
+  console.log("getting last post")
+  console.log(params)
+  return db.query(params).promise().then( (data) => {
+    console.log(data)
+    const lastPost = data.Items[0]
+    console.log("lastPost")
+    console.log(lastPost)
     lastPost.images.push(url)
     const item = {
       TableName: process.env.POST_TABLE,
       Item: lastPost
     }
-    console.log("lastPost")
+    
     return db.put(item).promise().then( (data) => {
       console.log(data)
       return { post: data, err:null}

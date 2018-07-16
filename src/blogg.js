@@ -23,20 +23,14 @@ class Blogg extends Component {
       console.log(i)
       return (
         <div key={i}>
-          <Post title={post.title} body={post.body}/>
+          <Post post={post}/>
         </div>
       )
     })
     return (
       <div className="container">
         <div className="row">
-          <div className="col-12">
-            <div className="top-image">
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-12">
+          <div className="col-sm-8 col-sm-offset-2">
             {posts}
           </div>
         </div>
