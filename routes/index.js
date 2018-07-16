@@ -36,27 +36,43 @@ router.get('/bot', (req, res, next) => {
   }
 })
 
+const memory = {}
+
 router.post('/bot', async (req, res, next) => {
   console.log("meddelande från bot")
   res.status(200).send("OK")
   const fullMessage = req.body.entry[0].messaging[0]
   const { message } = fullMessage
   const { id } = fullMessage.sender
-  console.log(message)
   if (message.text) {
     const command = message.text.split(':')
-    const { post, err } = await createPost({title: command[0], body: command[1]})
+    if (command.length <= 1) {
+      await sendMessage(id, {title: 'Fel', body: 'Inget kommando'})
+      return 
+    }
+    const from = await fetchName(id)
+    const { post, err } = await createPost({from, title: command[0], body: command[1]})
     if (err) {
       await sendMessage(id, {title: 'Fel', body: err})
     } else {
       await sendMessage(id, post)
     }
   } else if (message.attachments) {
-    console.log(message.attachments)
-    console.log(message.attachments[0].payload)
+    const { url } = message.attachments[0].payload
+    await addImage(url)
   }
   
 })
+
+const fetchName = async (id) => {
+  let fetchNameUrl = process.env.GET_USER_NAME_URL.replace("<USERID>", id)
+  return fetch(fetchNameUrl + process.env.PAGE_TOKEN).then(res => {
+    return res.json()
+  }).then( name => {
+    console.log(name)
+    return name
+  })
+}
 
 const getPosts = async () => {
 
@@ -72,12 +88,36 @@ const getPosts = async () => {
 
 }
 
+const addImage = async (url) => {
+  const params = {
+    TableName: process.env.POST_TABLE,
+    limit: 1
+  }
+  return db.scan(params).promise().then( (items) => {
+    const lastPost = items.Items[0]
+    if (!lastPost.images) { lastPost.images = [] }
+    lastPost.images.push(url)
+    const item = {
+      TableName: process.env.POST_TABLE,
+      Item: lastPost
+    }
+    return db.put(lastPost).promise().then( (data) => {
+      console.log(data)
+      return { post: data, err:null}
+    }).catch(err => {
+      console.error(err)
+      return { post: null, err}
+  }).catch(err => {
+    return { posts: null, err}
+  })
+}
+
 const createPost = async (post) => {
   const item = {
     TableName: process.env.POST_TABLE,
     Item: {
       id: uuid(),
-      date: moment().format(),
+      timestamp: new Date().getTime(),
       title: post.title,
       body: post.body,
       location: post.location,
